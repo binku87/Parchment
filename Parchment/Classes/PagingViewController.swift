@@ -194,7 +194,7 @@ open class PagingViewController:
     /// _Default: .scrolling_
     public var contentInteraction: PagingContentInteraction {
       get { return options.contentInteraction }
-      set { 
+      set {
         options.contentInteraction = newValue
         configureContentInteraction()
       }
@@ -301,6 +301,8 @@ open class PagingViewController:
     /// Used to keep a strong reference to the internal data sources.
     private var dataSourceReference: DataSourceReference = .none
 
+    public var defaultSelectedIndex: Int?
+
     // MARK: Initializers
 
     /// Creates an instance of `PagingViewController`. You need to call
@@ -353,8 +355,6 @@ open class PagingViewController:
         super.init(coder: coder)
         collectionView.delegate = self
         configurePagingController()
-        // Register default cell
-        register(PagingTitleCell.self, for: PagingIndexItem.self)
     }
 
     // MARK: Public Methods
@@ -408,6 +408,8 @@ open class PagingViewController:
         if let previouslySelected = state.currentPagingItem,
             let pagingItem = updatedItems.first(where: { $0.isEqual(to: previouslySelected) }) {
             pagingController.reloadData(around: pagingItem)
+        } else if let defaultSelectedIndex = defaultSelectedIndex {
+            pagingController.reloadData(around: updatedItems[defaultSelectedIndex])
         } else if let firstItem = updatedItems.first {
             pagingController.reloadData(around: firstItem)
         } else {
